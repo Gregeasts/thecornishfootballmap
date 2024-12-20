@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footballing Demographic Report in Cornwall</title>
+    <style>
+        /* Overall page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header section styling */
+        header, .section-header {
+            background-color: #002A5C; /* Cornwall FA Dark Blue */
+            color: white;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        header h1, .section-header h2 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        header p, .section-header p {
+            font-size: 1.2em;
+            margin: 10px 0 0;
+        }
+
+        /* Main content styling */
+        .content {
+            width: 80%;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .p1{
+            margin-top: 65px;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            color: #FFB81C; /* Cornwall FA Yellow */
+            margin-bottom: 15px;
+        }
+
+        .content p {
+            font-size: 1.1em;
+            color: #333333;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Map and image styling */
+        .map-container, .images-row {
+            width: 100%;
+            height:450px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .content-left {
+        width: 50%;
+        
+        overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            
+            border: none;
+        }
+
+        .images-row {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .image-card {
+            width: 30%;
+            text-align: center;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-card1 img {
+            width: 50%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-card p {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333333;
+        }
+
+        footer {
+            background-color: #002A5C; /* Cornwall FA Dark Blue */
+            color: white;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        footer a {
+            color: #FFB81C; /* Cornwall FA Yellow */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .maps-images-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
+        }
+
+        /* Styling for each row */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .map-item, .image-item {
+            width: 48%; /* Adjust width for two-column layout */
+        }
+
+        .map-item iframe {
+            width: 100%;
+            
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        /* Style the label with a black box and yellow text */
+        .selector-label {
+            display: inline-block; /* Ensure the box wraps around the text */
+            padding: 10px 15px;    /* Add some padding for a button-like appearance */
+            background-color: #000; /* Black background */
+            color: #ffd700;         /* Bright yellow text */
+            font-size: 16px;        /* Adjust font size */
+            font-weight: bold;      /* Make the text bold */
+            border-radius: 5px;     /* Add rounded corners */
+            text-align: center;     /* Center the text */
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Add a subtle shadow */
+        }
+
+
+        .image-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Individual Thumbnail Styling with Variable Sizes */
+        .image-tile {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        /* Hover effect */
+        .image-tile:hover {
+            transform: scale(1.05);
+        }
+
+        /* Image inside tile */
+        .image-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Label on each image */
+        .image-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            background: rgba(0, 42, 92, 0.8); /* Cornwall FA Dark Blue */
+            color: #FFB81C; /* Cornwall FA Yellow */
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
+        /* Fullscreen overlay for expanded view */
+        .content-display {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            margin: 20px auto;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .cover-image-container {
+            position: relative;
+            width: 100%;
+            height: 100;
+            overflow: hidden;
+        }
+
+        .cover-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20%; /* Make the image cover the entire container */
+            height: 20%; /* Make the image cover the entire container */
+            z-index: 1; /* Ensure it stays behind other elements */
+        }
+
+        /* Left side for Map */
+        .content-left {
+            width: 50%;
+            
+            overflow: hidden;
+        }
+        
+
+        /* Right side for Image */
+        .content-right {
+            width: 50%;
+            height: 400px;
+            overflow: overlay;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .content-right1 {
+            width: 100%;
+            height: 400px;
+            overflow: overlay;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Map iframe and Static Image Styling */
+        iframe, .content-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+           
+        }
+        .cover-image-container .cover-image{
+            z-index:2;
+            width:40%;
+        }
+        /* Description Box */
+        .description-box {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+        /* General Layout */
+        .content-wrapper {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Selector Section */
+        .content-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .selector-label {
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 10px;
+            color: #ffb404;
+        }
+
+        .selector-dropdown {
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #f4ac04;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .selector-dropdown:hover {
+            background-color: #eaeaea;
+            border-color: #aaa;
+        }
+
+        .selector-dropdown:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .author-details {
+            display: flex column;
+            align-items: center;
+            gap: 20px; /* Adds space between the image and text */
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f9f9f9; /* Light gray background */
+            border: 1px solid #ddd; /* Subtle border */
+            border-radius: 10px; /* Rounds the corners of the section */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a polished look */
+        }
+        .author-details1-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping to new rows */
+            gap: 20px; /* Adds spacing between items */
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .author-details1 {
+            flex: 1 1 calc(50% - 10px); /* Each item takes up 1/3 of the row minus gap */
+            max-width: 550px; /* Optional: Set a maximum width for each item */
+            display: flex;
+            flex-direction: column;
+            
+            align-items: center;
+            padding: 10px;
+            background-color: #f9f9f9; /* Light gray background */
+            border: 1px solid #ddd; /* Subtle border */
+            border-radius: 10px; /* Rounds the corners of the section */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for a polished look */
+        }
+
+
+        .author-photo {
+            width: 150px; /* Set the width of the image */
+            height: 150px; /* Set the height of the image */
+            border-radius: 50%; /* Makes the image an oval (circle) */
+            object-fit: cover; /* Ensures the image fits within the shape without distortion */
+            border: 3px solid #ddd; /* Optional: Adds a subtle border around the image */
+        }
+        .author-photo1 {
+            width: 450px; /* Set the width of the image */
+            height: auto; /* Set the height of the image */
+            
+            
+            border: 3px solid #ddd; /* Optional: Adds a subtle border around the image */
+        }
+
+        .author-details p {
+            margin: 5px 0; /* Space between paragraphs */
+            font-size: 16px; /* Adjust font size for readability */
+            line-height: 1.5; /* Improved line spacing */
+            color: #333; /* Dark gray text for better contrast */
+        }
+
+        .author-details strong {
+            font-size: 18px; /* Slightly larger font for emphasis */
+            color: #000; /* Bold text color */
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+
+    <header>
+        <h1>Footballing Demographic Report in Cornwall</h1>
+        <p>Visualizing the professional youth football progression pathway in Cornwall</p>
+    </header>
+
+    <!-- Introduction Section -->
+    <div class="content">
+        <h2>Introduction</h2>
+        <p>Welcome to the Footballing Demographic Report in Cornwall, a comprehensive analysis exploring youth and male football development in the region. This report visualizes the progression pathway from grassroots football to professional academies, focusing on accessibility, team distribution, and developmental opportunities available to aspiring players. It also takes a closer look into the grassroots set up and income distribution across Cornwall.</p>
+        <p>Through interactive maps, detailed statistics, and hierarchical models, we examine the current state of footballing infrastructure across Cornwall. By identifying gaps and proposing improvements, this report aims to provide actionable insights that can help ensure football opportunities are evenly distributed and accessible to players of all age groups, areas and family incomes.</p>
+        <p>The data highlights key aspects of Cornwall's football ecosystem, such as youth team concentrations, development centre locations, and pyramid hierarchies, enabling stakeholders to better understand and support the progression pathway in the region.</p>
+        
+        <h2>About the Author</h2>
+        <div class="author-details">
+            <p><img src="1712849395721 (2).jpg" alt="Greg Eastman Photo" class="author-photo" /></p>
+            <p><strong>Greg Eastman</strong></p>
+            <p><strong>Cornwall YLA Male and Boys Lead</strong></p>
+            <p>As a youth player, I progressed through the football development pathway in Cornwall and spent six years within Plymouth Argyle's Academy. After being released at U16 I still play regularly but also transitioned from playing to coaching. I have held roles as lead coach in various Centre Of Excellence groups and Elite Hub groups through Plymouth Argyle, helping to guide and inspire the next generation of players.</p>
+            <p>Alongside my coaching career, I pursued an academic path in mathematics and computer science and am currently at the University of Plymouth. In the long term, I plan to work within statistical analysis.</p>
+        </div>
+    </div>
+
+
+    <div class="section-header">
+        <h2>Youth Progression Pathway</h2>
+        
+    </div>
+
+    <!-- Main content Section -->
+    <div class="content">
+        <h2>Youth Progression Pathway</h2>
+
+        <p>A youth development pathway is the pathway towards the professional game through multiple stages, building up to playing for a professional academy. It is important to have a pathway in Cornwall to give the biggest opportunity for players in Cornwall to excel in their sport.</p>
+        <p>The youth development pathway in Cornwall is primarily driven by setups organized within Plymouth Argyle's Community Trust. This is because Plymouth Argyle is the only professional football club in the region with a dedicated catchment area extending into Cornwall. While Exeter City also has a small presence in upper Cornwall, Plymouth Argyle’s network dominates the development pathway, ensuring opportunities for aspiring players across the county to progress within their structured programs.</p>
+        <p>The pathway within Cornwall is shown below:</p>
+        
+            
+        <img src="Screenshot 2024-12-16 112412.png" width =80% height=160px>
+               
+        <div id="pathway-table-container"></div>
+        
+        
+        <p>The pathway from local development centres to professional youth academies is crucial for identifying and developing young football talent. This interactive map helps us visualize where these development centres are located and how they feed into the broader football ecosystem in the region.</p>
+        <p>This map illustrates the locations representing key youth development centres within Cornwall. The circles on the map highlight areas where players are nurtured and trained through programs offered by <strong>Argyle Community Trust</strong>, which leads into the renowned <strong>Argyle Academy</strong> in Plymouth. Circles can be filtered, based on their stage in the progression pathway.</p>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <iframe src="population_density_with_filtered_markers_and_radius_filtered.html"></iframe>
+        </div>
+
+        <!-- Images Row Section -->
+        <div class="images-row">
+            <div class="image-card">
+                <img src="Screenshot 2024-11-10 220714.png" alt="Current Poor COE Locations">
+                <p>Current poor PDC locations, not covering much of Cornwall.</p>
+            </div>
+            <div class="image-card">
+                <img src="Screenshot 2024-11-10 220646.png" alt="Current Missing COE Locations">
+                <p>Current COE locations missing key areas such as Newquay.</p>
+            </div>
+            <div class="image-card">
+                <img src="Screenshot 2024-11-10 220608.png" alt="Well Spaced Elite Hubs">
+                <p>Well spaced Elite Hub centres.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Section Header and Map -->
+    <div class="section-header">
+        <h2>Projected Pathway Distribution</h2>
+        <p>An ideal centre distribution across Cornwall </p>
+    </div>
+
+    <!-- Second Map and Images -->
+    <div class="content">
+        <p>These maps below show potential locations for COE's & PDC's in the future which span far more of Cornwall, making these locations far more accessible to all youth within the County.</p>
+        <!-- Map Container -->
+        <div class="map-container">
+            <iframe src="population_density_with_filtered_markers_and_radius_filteredbetter.html"></iframe>
+        </div>
+
+        <!-- Images Row Section -->
+        <div class="images-row">
+            <div class="image-card" style="width: 45%;">
+                <img src="Screenshot 2024-11-10 220756.png" alt="COE Growth Potential">
+                <p>Potential COE placements</p>
+            </div>
+            <div class="image-card" style="width: 45%;">
+                <img src="Screenshot 2024-11-10 220829.png" alt="New Proposed Sites">
+                <p>Proposed new PDC sites for better coverage</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pyramid Hierarchy Section -->
+    <div class="section-header">
+        <h2>Pyramid Hierarchy</h2>
+    </div>
+
+    <div class="content">
+        <p> For the above maps, I looked at the hierarchical structure of the football development infrastructure in Cornwall. Within the pyramid, each feeder centre is connected to its respective progression along the pathway. For example, each PDC is shown to feed into its respective Centre Of Excellence. From this, we can see areas in which the development structure is distributed unevenly. On the left, in red, the current pyramid structure is shown (based off of the blue map), with an example of a better structure suggested on the right (taking locations off of the green, suggested location map).</p>
+        <div class="images-row">
+            <div class="image-card" style="width: 45%;">
+                <img src="Screenshot 2024-11-10 220148.png" alt="Grassroots">
+                
+            </div>
+            <div class="image-card" style="width: 45%;">
+                <img src="Screenshot 2024-11-10 220205.png" alt="Elite Youth Level">
+                
+            </div> 
+        </div>
+        <p>As shown, the 1-2-2-10 structure  of the current pyramid hierarchy makes for an uneven pathway with the COE stage up to the Elite Hub both containing the same number of centres. Along with this, the Brannel COE has 8 feeder centres so would likely be concentrated with too higher influx of new players, while the Launceston centre only has 3.</p>
+        <p>The suggested pathway locations above in the maps have been transferred into the above pyramid structures. As shown, this 1-2-4-13 structure is a much more evenly distributed pyramid. Each Elite Hub centre contains two feeder Centre of excellences, while each COE contains at least 3 development centres, up to a maximum of 5 feeder centres.</p>
+        <p>The pyramid hierarchy represents the structured levels in football development. In theory, the second pyramid structure would give far more players access and opportunity to progress upwards along this development pathway.</p>
+    </div>
+    <div class="section-header">
+        <h2>Youth Team Concentration</h2>
+    </div>
+    <div class="content">
+        <p> Another important factor to consider within Cornwall is the distribution of youth teams across all ages. This can give us great insights into areas and age groups with poor provisions.</p>
+        <p>These maps contain the number of teams within each area per 50 individuals per age range. It is a good measure of the concentration of football teams and opportunities in Cornwall. By clicking on each image, the current youth team locations for that age respectively (as of January 2025) are shown, which can be compared to another via the comparison dropdown. Note: These maps are large and may take a while to load.</p>
+        <!-- Map Container -->
+        <div class="image-grid">
+            <div class="image-tile" style="grid-column: span 2;" onclick="updateContent('U7', '7_footballdemographic.html')">
+                <img src="U8map.png" alt="Image U7">
+                <div class="image-label">U7</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;" onclick="updateContent('U8', '8_footballdemographic.html')">
+                <img src="U9map.png" alt="Image U8">
+                <div class="image-label">U8</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2; grid-row: span 2;" onclick="updateContent('U9', '9_footballdemographic.html')">
+                <img src="U10Map.png" alt="Image U9">
+                <div class="image-label">U9</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;" onclick="updateContent('U10', '10_footballdemographic.html')">
+                <img src="U11map.png" alt="Image U10">
+                <div class="image-label">U10</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;grid-row: span 2;"onclick="updateContent('U11', '11_footballdemographic.html')">
+                <img src="U12map.png" alt="Image U11">
+                <div class="image-label">U11</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;" onclick="updateContent('U12', '12_footballdemographic.html')">
+                <img src="U13map.png" alt="Image U12">
+                <div class="image-label">U12</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;grid-row: span 2;"onclick="updateContent('U13', '13_footballdemographic.html')">
+                <img src="U14 map.png" alt="Image U13">
+                <div class="image-label">U13</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;grid-row: span 2;" onclick="updateContent('U14', '14_footballdemographic.html')">
+                <img src="U15map.png" alt="Image U14">
+                <div class="image-label">U14</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;"onclick="updateContent('U15', '15_footballdemographic.html')">
+                <img src="U16map.png" alt="Image U15">
+                <div class="image-label">U15</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;"onclick="updateContent('U16', '16_footballdemographic.html')">
+                <img src="U18.png" alt="Image U16">
+                <div class="image-label">U16</div>
+            </div>
+            <div class="image-tile" style="grid-column: span 2;" onclick="updateContent('U18', '18_footballdemographic.html')">
+                <img src="U11map.png" alt="Image U18">
+                <div class="image-label">U18</div>
+            </div>
+        </div>
+        <label for="mapSelector"  class="selector-label" >Compare against:</label>
+                <select id="mapSelector" >
+                    <option value="plainmap.png" selected>Population Density Map</option>
+                    <option value="7_footballdemographic.html" >7 Football Demographic</option>
+                    <option value="8_footballdemographic.html">8 Football Demographic</option>
+                    <option value="9_footballdemographic.html">9 Football Demographic</option>
+                    <option value="10_footballdemographic.html">10 Football Demographic</option>
+                    <option value="11_footballdemographic.html">11 Football Demographic</option>
+                    <option value="12_footballdemographic.html">12 Football Demographic</option>
+                    <option value="13_footballdemographic.html">13 Football Demographic</option>
+                    <option value="14_footballdemographic.html">14 Football Demographic</option>
+                    <option value="15_footballdemographic.html">15 Football Demographic</option>
+                    <option value="16_footballdemographic.html">16 Football Demographic</option>
+                   
+                    <option value="18_footballdemographic.html">18 Football Demographic</option>
+                </select>
+    
+        <!-- Fullscreen Overlay for Map and Image -->
+        <div class="content-display">
+            
+            <!-- Map Section -->
+            <div class="content-left">
+                <iframe id="mapIframe" src="7_footballdemographic.html" frameborder="0"></iframe>
+            </div>
+            <!-- Static Image Section -->
+            <div class="content-right">
+                
+                <div id="rightContent" class="content-right1">
+                    <img id="staticImage" src="plainmap.png" alt="Static Map Image">
+                </div>
+            </div>
+        </div>
+    
+        <!-- Description Box -->
+        <div class="description-box" id="descriptionBox">Map description will appear here when clicked.</div>
+
+
+
+        
+    </div>
+    <div class="content">
+    <div class="images-row">
+        <div class="image-card" style="width: 45%;">
+            <img src="Screenshot 2024-11-22 104450.png" alt="Grassroots Pyramid">
+            
+        </div>
+        <div class="image-card" style="width: 45%;">
+            <img src="Screenshot 2024-11-22 104502.png" alt="Grassroots Pyramid">
+            
+        </div>
+    </div>
+
+    <p>The graphs above show the number of teams present across each age group in Cornwall and the number of boys in Cornwall per team. As expected, in the earlier youth phases the number of teams are lower before increasing sharply until the U9 age group where from the U9 to U12 age groups the number of teams are steady. At this point the team concentration begins to fall rapidly in the later U16 and U18 stages. Perhaps, the biggest concern is how few teams there are in the U18 age phase, with one team per 300 individuals. Taking into consideration that roughly 3 in 10 16-18 year old footballers play mens football rather than U18 football this decreases to one team per 210 individuals, as shown on the second graph. The green line on the first graph reprsents a reasonable target of teams across each age group, dependent on the number of players per team and ages of the players. For example, at U7 where teams play 5-aside, 50 teams would accomodate for 1 in 9 U7's playing football (assuming each team is made of roughly 8 players). On the right, the current players per team (blue) are compared to the ideal players per team (red), estimated roughly. As can be seen, from the U9 to U12 categories, this target is easily achievable. In the U11 and U12 age groups, this would only require 4 more teams to make (65 teams). The age groups with far higher concentrations of players per each team are the U7, U16 and U18 ages, at both ends of the youth football spectrum.  </p>
+    </div>
+
+    <div class="section-header">
+        <h2>Low-Income Areas Impact on Football Development</h2>
+    </div>
+    
+    <div class="content">
+        <p> For this section, I examined the impact of low-income areas on the football development infrastructure in Cornwall. I did this by focusing on whether income disparities influence access to development opportunities.</p>
+        <p>On the left, there is an image of the Income Deprivation Affecting Children Index (IDACI) Score map, where an interactive copy can be found via: <a href="https://www.economyhub.cornwall.gov.uk/deprivation/map/" target="_blank">https://www.economyhub.cornwall.gov.uk/deprivation/map/</a>. <p>The Income Deprivation Affecting Children Index (IDACI) scores areas by the level of deprivation among children aged 0 to 15. It measures the proportion of children living in families receiving Income Support, income-based Jobseeker’s Allowance, Universal Credit (for non-working adults), Pension Credit Guarantee, or Child Tax Credit below a certain threshold. A higher score indicates greater deprivation. For example, a score of 0.24 equates to 24% of children in that area living in low income deprivation. Areas such as Camborne, Pool and Hayle have an average score of around 25%, St Blazey around 30%. The worst areas in cornwall consist of East Penzance with a staggering 52.5%, Pengegon in Camborne at 51.6% and North Redruth at 45%.</p></p>
+        <p> On the right, a map consisting of the number of teams per 50 individuals across the full U7-U18 age group is shown, combining the information previously discussed across all previous age groups. While the areas shown across both maps differ in boundaries and size, some results can certainly be drawn from this information.
+            
+        <div class="images-row">
+            <div class="image-card" style="width: 45%;">
+                <div class="cover-image-container">
+
+                    <!-- Image for background layer -->
+                    <img src="deprivationmap.png" alt="Low-Income Areas Impact on Football Development">
+            
+                    <!-- Image for the overlay layer -->
+                    <img src="deprivationmapindex.png" alt="Interactive Map" class="cover-image">
+                </div>
+
+            </div>
+           
+            <div class="image-card" style="width: 45%;">
+                <iframe src="7_u18_footballdemographic.html" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+        </div>
+        <p>This map highlights key low-income areas within Cornwall, which can be compared to the football team demographic to compare which areas have better access to football clubs by income. This can show how access to football development programs varies across different communities. Many low income areas, as shown, suffer from a lack of available opportunities, suggesting a potential barrier for young players from these regions who wish to progress in football.</p>
+        <p>While many of these deprived areas do consist of football teams, there is often minimal teams in comparison to the poulation of these areas. Also these teams tend to be further from the most deprived areas in a town than some of the more wealthy areas. This would suggest that in the low income areas the opportunity to play in a youth football set up is lower. For example, in Penzance, an area with one of the highest levels of deprivation, there is only one team per 100 youth individuals. Furthering this, neighbouring teams such as mousehole are far more accessible to higher income families due to the difficulties of transport to and from these more isolated areas. As shown, less deprived areas such as Wendron (8.5% of children from low incomr families) have far more opportunities, with 2.2 teams per 50 individuals. Similarly, areas such as Camborne and Redruth also have roughly one team per 100 individuals and the main team within this Camborne area, Troon, is actually located in an area with a lower 18% deprivation. Similarly, Redruth United is located in an area with 11% income deprivation. Both are over a 35 minute walk from the most deprived areas of Redruth and Camborne. These maps do not show all the information though. Even areas such as Falmouth with a positive one team per 50 individuals have all their youth set ups around two miles from the most deprived areas. This trend can be shown across many different areas as shown in this table:  </p>
+        <div id="poverty-table-container"></div>
+        <p> Below, the percentage of deprivation for areas with the most high deprivation in regions across Cornwall are compared to the distance from the closest youth set up. This graph shows all areas with a IDACI score (explained above) of over 0.2 - 20% of families living with income deprivation. </p>
+        <img src="Screenshot 2024-12-17 161525.png" width =60% height=auto>
+        <p> As shown through the trendline, the most deprived areas have a larger distance from the closest local football club. This means that those from the most deprived areas have less access to football opportunities, especially as they are far less likely to be able to drive. This is backed in this <a href="https://sportengland-production-files.s3.eu-west-2.amazonaws.com/s3fs-public/2024-12/Active%20Lives%20Children%20and%20Young%20People%20Survey%20-%20academic%20year%202023-24%20report.pdf?VersionId=nuzHIYew4Irlh6CAiWvnmgquYfIYGs4w" target="_blank">national report by Sport England</a> , whereby those from lower income families have far lower participation levels within sport. It states: "Children and young people from the least affluent families are the least likely to be active, with only 45% meeting the Chief Medical Officers’ guidelines compared to 57% of those from affluent families.", where a huge part of this could be due to the lack of access for these families.</p>
+        <p>The mean income deprivation in Cornwall is 15.8%, with 116 LSOA areas having a larger deprivation % than this. LSOA stands for Lower Layer Super Output Areas, where each LSOA area is split to contain 400-1200 households.   We will look into all areas with deprivation larger than 20%. </p>
+        <p> Below, a map is shown containing a point within roughly the centre of each area with over 20% of low income deprivation for young people. As shown, these areas are often clustered together with areas such as Camborne, St Austell and Liskeard all hosting multiple neighbouring areas with high income deprivation. These circle markers vary in colour from green to red, with red being the most deprived areas. These areas are then connected by lines to the closest football team to this area. Some exceptions are made to this: areas are connected to 'developed teams' with multiple age groups rather than isolated teams which are not very accessbile. For example, Roche (South) is actually closer to St Dennis Fc than St Stephen. However, it is connected to St Stephen as St Stephen has 8 teams spread across multiple age groups while St Dennis onnly has one under 12 team. These team locations are represented by triangles, with the number of teams per 50 players for that given area corresponding to the colour of the triangle. Often, this will be the deprived areas teams per 50. Finally, these two markers are connected by lines, green to red based on the distance a player would have to travel to get from their area to the club. </p>
+        <div class="image-card" style="width: 100%; height: 500px;">
+            <iframe src="incomemap.html" width="100%" height="100%" style="border: none;"></iframe>
+        </div>
+        <p>Using the filters on the above map, some interesting information can be obtained, with some positives and also some negatives. These are discussed below.</p>
+        <div class="author-details1-container">
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 120743.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Camborne & Redruth</strong></p>
+                <p>As shown clubs tend to be external to the main towns of Camborne, Pool and Redruth. These clubs, including Dropship, Troon and Illogan are leave a huge radius, centred around Tuckingmill with little access to any youth football set up. Pengegon, the second most deprived area in the whole of Cornwall is over a 35 minute walking distance from any suitable youth set up.</p>
+            </div>
+
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 120936.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>St Ives</strong></p>
+                <p>St Ives is an area, much like Liskeard, where the youth teams are not actually within St Ives and thus a journey must be made to access them, not beneficial to those suffering from income deprivation. These journeys have over an hour long walking distances, like Liskeard. Furthermore, St Ives also only consists of an under 12 team and for any other age group the nearest teams are in Hayle, an even longer journey.</p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 120859.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Penzance</strong></p>
+                <p>Penzance is another area whose main youth set up falls outside the main region of the area (in this case instead in Newlyn). This is on the far left side of Penzance, far from the most deprived areas. This feels extremely uneccesary with multiple astro turfs and grass pitches, such as at Humphry Davy School, being within these low income areas.</p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 121503.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Liskeard</strong></p>
+                <p>Liskeard is one of the areas in Cornwall where the difficulties for those living in income deprivation to access their local club is extenuated. While Liskeard Afc is located within the main town, it possesses no youth teams and instead youth players must make the journey to St Cleer to access a youth football set up. For all of these areas in Liskeard, the walking distance journey to the clubs training facility is over an hour. </p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 120212.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>St Austell and Surrounding Areas</strong></p>
+                <p>Similar to that of Camborne & Redruth, club sides fall in external areas to the main town (the only exception to this St Austell U18). This can lead to long journeys to find a suitable opportunity for youth players in this area. Relatively more rural areas surrounding St Austell (at the top of the image) also suffer from huge travel distances to find suitable playing opportunities.</p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 121134.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Falmouth</strong></p>
+                <p>Falmouth is an area where the location of the main clubs, Falmouth United, Penryn and Speak Out United seem to be distanced from much of the town (especially areas such as Penmere and Falmouth Docks). However, when looking closer at the areas of income deprivation the clubs are actually centred within these areas. This is beneficial for the low income areas, alongside being on the site of schools so highly accessible as a whole.</p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 121252.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Bodmin</strong></p>
+                <p>While Bodmin has multiple areas with low incomes, the club has a central location meaning that all the low income areas within Bodmin can easily access the club. As shown, the external area of Lostwithiel does however have a far longer journey time to Bodmin, but has a relatively low population in comparison to that of Bodmin so the youth team location is suitable.</p>
+            </div>
+            <div class="author-details1">
+                <p><img src="Screenshot 2024-12-18 121534.png" alt="Greg Eastman Photo" class="author-photo1" /></p>
+                <p><strong>Saltash & Torpoint</strong></p>
+                <p>Despite having multiple areas of deprivation, the football clubs in both Saltash and Torpoint are extremely accessible, essentially in the centre of these different areas as shown. This means there is a low travel distance for youth players, with each area a maximum of a twenty minute walking distance.</p>
+            </div>
+        </div>
+        
+        <p>For a detailed look at how these mapping techniques and tools were used, refer to Greg Eastman’s <a href="https://www.kaggle.com/code/greggerseast/pop-heatmap/notebook" target="_blank">Kaggle Notebook</a>.</p>
+    </div>
+    <div class="section-header">
+        <h2>"Complete Clubs"</h2>
+    </div>
+    <div class="content">
+        <p>Defining a "complete club" to be one which has a linear pathway from U7 youth football to mens football, how many teams in Cornwall have this set up? How are these "complete clubs" spread across Cornwall? A "complete club" hosts many benefits including: Reduced Dropout Rates - A clear progression reduces the likelihood of players leaving the sport during transitional phases. Improved player development - Players  transition smoothly through different age groups, minimizing disruption in their development. Club Loyalty - Players who grow up within a club are more likely to remain committed, fostering a strong club culture, and in the long term offering more to the club in terms of voluntary and non-voluntary roles. Opportunities - Clubs with more age ranges and groups offer a far greater array of opportunities for those within the local community, predominantly to play football but also to coach, referee and support the local set ups.</p>
+        <p>As shown in the graph below, there are a variety of club structures across Cornwall. There are many youth teams consisting of only one age group, for example Morwenstow Youth U9. However, there are also many "complete clubs", eight to be precise. There are seven clubs also requiring just one extra age group to become complete. Finally, there are five clubs with nine age groups, just missing two different ages to be complete.</p>
+        <img src="agegroups.png" width =60% height=auto>
+        <div class="image-card1" style="width: 100%; height: 700px;">
+            <p>Below is a list of all the "complete" or "nearly complete" clubs are shown. These clubs have been plotted on the map below.</p>
+
+            <img src="Screenshot 2024-12-18 163812.png" width =40% height=auto>
+            <p> All of the teams with 10 different age groups contain teams within all of the ages U7-U15. St Blazey and Helston are lacking U16 teams, while the rest lack U18 teams. For the teams with 9 different age groups, both Kelliwik United and Redruth United lack both U16 and U18 teams. Falmouth United lack U14 and U18 teams. St Day lack U7 and U8 teams, while Bodmin lack U7 and U9 teams. </p>
+        </div>
+        <div class="image-card" style="width: 100%; height: 500px;">
+            <iframe src="team_map.html" width="100%" height="80%" style="border: none;"></iframe>
+            <p>Green markers represent a "complete club" with every single youth age group, orange a club with 10/11 age groups and yellow 9/11 age groups.</p>
+
+        </div>
+        <p class="p1"> As can be seen, many highly populated areas consist of complete (or nearly complete) clubs. Some exceptions to this include Penzance, Torpoint, Launceston and Bude. St Austell is neighboured by two nearly complete clubs, however as mentioned previously with the travel distance these may not be suitable for deprived families.</p>
+    </div>
+    <div class="section-header">
+        <h2>End Notes</h2>
+    </div>
+
+    
+    <!-- End Notes Section -->
+    <div class="content">
+        <p>
+            This site provides an overview of the male football demographic and pathway in Cornwall. The insights found within this can be taken and used to drive positive change in our football community.
+        </p>
+        <p>
+            For those interested in exploring the mapping and analysis methods used to visualize and understand player progression, I have shared the detailed Python code and tools utilized in this project on <strong>Kaggle</strong>. You can view the complete mapping process, including all data in table form that was used to create the visualizations, by following this <a href="https://www.kaggle.com/code/greggerseast/pop-heatmap/notebook" target="_blank">link to the Kaggle Notebook</a>.
+        </p>
+        
+        <p>
+            <strong>References:</strong>
+        </p>
+        <ul>
+            <li><a href="https://argylecommunitytrust.co.uk/" target="_blank">Plymouth Argyle Community Trust</a>: For more information about the youth development pathway, visit this link.</li>
+            <li><a href="https://www.kaggle.com/code/greggerseast/pop-heatmap/notebook" target="_blank">Greg Eastman’s Kaggle Notebook</a>: To explore the coding tools and techniques used in this project, visit this link.</li>
+            <li><a href="https://www.cornwallfa.com/" target="_blank">Cornwall FA</a>: For access to current information on Cornwall FA and its many other projects.</li>
+            <li>All income and deprivation metrics sourced from: <a href="https://www.gov.uk/government/collections/english-indices-of-deprivation">English Indices of Deprivation 2019 Technical Report</a> Creator: Oxford Consultants for Social Inclusion (OCSI)
+                Rights: © Crown Copyright - All content is available under the Open Government Licence. <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/</a></li>
+            <li><li><a href="https://sportengland-production-files.s3.eu-west-2.amazonaws.com/s3fs-public/2024-12/Active%20Lives%20Children%20and%20Young%20People%20Survey%20-%20academic%20year%202023-24%20report.pdf?VersionId=nuzHIYew4Irlh6CAiWvnmgquYfIYGs4w" target="_blank">Active Lives Children and Young People Survey 2023-24 Report</a>: Insights on sports activity levels among young people by Sport England.</li></li>
+        </ul>
+    </div>
+
+
+
+
+    <!-- Footer Section -->
+    <footer>
+        <p>Powered by <a href="https://www.cornwallfa.com" target="_blank">Cornwall FA</a></p>
+    </footer>
+    <script>
+        const descriptions = {
+            'U7': 'Within the U7 age group, the spread of teams covers the majority of highly populated areas especially in The West of Cornwall. However, as a common theme across most age groups, the North of Cornwall is shown to have limited teams. In fact, Wadebridge is the furthest team north in Cornwall. Within this age range, travel distances should be minimal meaning there are multiple smaller leagues across different areas. Teams like Liskeard and Looe may suffer due to having no nearby teams to compete against. Wadebridge play against Looe which is a 2 hour round journey there and back, unsuitable at U7 level. Similarly, Padstow compete against Liskeard which is roughly the same jounrey time. Bodmin and St austell are both highly populated areas which could benefit from having U7 teams.',
+            'U8': 'The distribution of teams across Cornwall improves in this age in comparison to the U7 age group, with densely populated areas such as Bodmin fielding U8 sides alongside Tregorrick acting as an opportunity for U8 teams within the Newquay area. A common theme across all ages that the Falmouth, Wendron and Helston region have a great range of teams and opportunities, is clearly noticeable within this age group. Alongside this, the North Coast of Cornwall is also a stretch with multiple teams across all ages including Troon, St Agnes and Redruth all having teams in most age ranges. As across all ages, the less densely populated area of South East Cornwall has very few teams located within it, even losing Looe as a team. In these younger ages, with only 7-aside matches, it is great to see multiple teams having two or three teams within each age group. A noticeable trend is that teams with multiple teams in these younger ages are far more likely to have older U15, U16 and U18 teams.',
+            'U9': 'Once more, the distribution improves in this age group, with teams especially in West Cornwall in a large proportion of the regions as shown. In fact, the U9 age group leaves very few highly populated areas without a team. St austell, an area lacking teams in lots of age groups, still does not have a team but bordering Tregorrick,St Blazey and Charlestown Fc offer three teams to counteract this.',
+            
+            'U10': 'The U10 distribution is very similar to that of the U9 distribution seen above. See U9 description above.',
+            'U11': 'The U11 age group features the second highest number of teams, as shown by the vast number of green areas in this map. This age group, alongside the U12 age group are the most highly concentrated as shown. These ages have the best spread of teams across Cornwall, however could benefit from multiple teams in some areas such as Penzance. ',
+            'U12': 'The U12 distribution is very similar to the U11 distribution described above. Small changes include a high concentration of teams in Central Cornwall such as St Stephens, Indian Queens and St Columb Major.',
+            'U13': 'This age is slightly less densely packed than the U12 age group. Most highly populated areas consist of teams, however there still is a large area absent of teams within upper Cornwall.',
+            'U14': 'The U14 age group again falls slightly from the U12 age and many areas which were previously green now lose colour and become orange or yellow suggesting that there are fewer teams per 50 individuals. On the positive, most highly packed areas do at least consist of one team. Northern Cornwall, as a common theme, still has far fewer teams than West Cornwall.',
+            
+            'U15': 'The U15 age group distribution features many more green and yellow areas with higher concentrations of teams in comparison to the U16 and U18 age groups. However, it still sees a decline in teams compared to its predecessor U14 age group. St Austell is a more populated area lacking a team for this age group, as mentioned though less populated neighbouring areas do feature teams. While in theme with the other age groups, it is frustrating that the upper regions of the County lack many teams. While less densely populated, the region of Padstow, St Teath and Camelford still contains a number of U15 boys who have no teams in their surrounding area. This lack of teams within the upper regions of Cornwall is likely why teams from these areas choose to play in the Devon Junior League.',
+            'U16': 'The U16 age group suffers from a steep drop in number of teams in comparison to the U15 age, potentially due to some participants focussing on more educational aspects of their development including GCSEs. Having said that, multiple clubs in and around Cornwall seem to end their youth pathways at U15 level. This includes teams such as Redruth United who have multiple youth teams from the U7 to U15 age categories. It would be extremely beneficial to the cornwall football system to retain players between the U15 and U16 age groups as between the U14 and U16 ages the number of teams drop by over 50%, showing a huge decrease in participation. One positive is the two teams in the North of Cornwall, which often suffers from a lack of football opportunities. Areas with large populations whom often have multiple teams such as Camborne and Penzance in this age offer only one team in the U16 age group.',
+            'U18': 'As shown above on the U18 map, the spread and number of U18 teams is vastly fewer than in other ages. While this may be somewhat due to some players progressing into mens football, opportunities are not as widely available at under 18 level across Cornwall. Key, established, football clubs in Cornwall in some regions lack under 18 teams, including Newquay and Wendron. Alongside this, with a similar trend across most age phases the upper regions of Cornwall are void of any teams. While travel distance for teams may not be as large an issue due to many players having a driving licence in this age group, it would be beneficial for a larger range of U18 teams to act as a step between youth and mens football in Cornwall. There is a huge drop off in male players at this U16-U18 stage, with many leaving football altogether.',
+
+            // ...
+        };
+        function updateContent(ageGroup, mapSrc) {
+            // Update iframe source based on selected age group
+            document.getElementById('mapIframe').src = mapSrc;
+            // Update description text for the age group
+            document.getElementById('descriptionBox').textContent = descriptions[ageGroup];
+        }
+    const mapSelector = document.getElementById('mapSelector');
+    const rightContent = document.getElementById('rightContent');
+
+    mapSelector.addEventListener('change', function () {
+        const selectedValue = this.value;
+
+        // Clear existing content in the right container
+        rightContent.innerHTML = '';
+
+        if (selectedValue.endsWith('.html')) {
+            // Add iframe for HTML map
+            const iframe = document.createElement('iframe');
+            iframe.src = selectedValue;
+            iframe.frameBorder = '0';
+            iframe.style.width = '100%';
+            iframe.style.height = '400px';
+            iframe.style.transform = 'scale(1)'; // Reset scaling to default
+            iframe.style.transformOrigin = 'top left'; // Ensure scaling adjusts from the top-left corner
+            rightContent.appendChild(iframe);
+        } else if (selectedValue.endsWith('.png')) {
+            // Add image for PNG map
+            const img = document.createElement('img');
+            img.src = selectedValue;
+            img.alt = 'Static Map Image';
+            img.style.width = '100%';
+            img.style.height = 'auto';
+            rightContent.appendChild(img);
+        }
+    });
+    const tableData = [
+    { program: "PDC", targetGroup: "Accessible to all", catchmentArea: "Within 8 km  radius of location" },
+    { program: "COE", targetGroup: "Highly skilled players", catchmentArea: "Within 16 km radius of location" },
+    { program: "Elite Hub", targetGroup: "Most skilled players in Cornwall", catchmentArea: "Within 24 km radius of location" },
+    { program: "Academy", targetGroup: "Best of the best within Cornwall & Devon", catchmentArea: "Within 48 km radius of location" }
+    ];
+    const povertyData = [
+    { area: "Camborne", closestTeam: "Troon FC", highestDeprivation: "51.6%", distance: "35 minute walk" },
+    { area: "Redruth", closestTeam: "Redruth United", highestDeprivation: "44.7%", distance: "40 minute walk" },
+    { area: "Falmouth", closestTeam: "Falmouth Community", highestDeprivation: "37.4%", distance: "30 minute walk" },
+    { area: "Liskeard", closestTeam: "St Cleer & Liskeard Fc", highestDeprivation: "41.6%", distance: "60 minute walk" },
+    { area: "Bodmin", closestTeam: "Bodmin Town Fc", highestDeprivation: "41.2%", distance: "12 minute walk" },
+    { area: "Penzance", closestTeam: "Penzance Fc", highestDeprivation: "52.5%", distance: "25 minute walk" },
+    { area: "St Austell", closestTeam: "Tregorrick (no St Austell youth teams)", highestDeprivation: "39.4%", distance: "30 minute walk" },
+    { area: "Tuckingmill/Pool", closestTeam: "Illogan Fc", highestDeprivation: "35.5%", distance: "50 minute walk" },
+    { area: "Helston", closestTeam: "Helston", highestDeprivation: "19%", distance: "20 minute walk" },
+    { area: "Truro", closestTeam: "Grasshoppers Fc", highestDeprivation: "38.2%", distance: "28 minute walk" },
+    { area: "Newquay", closestTeam: "Newquay Afc", highestDeprivation: "28%", distance: "20 minute walk" },
+    { area: "Hayle", closestTeam: "Hayle Afc", highestDeprivation: "30.5%", distance: "13 minute walk" },
+    { area: "St Agnes", closestTeam: "St Agnes Fc", highestDeprivation: "12.1%", distance: "17 minute walk" },
+    { area: "St Stephen", closestTeam: "St Stephen Fc", highestDeprivation: "25.1%", distance: "12 minute walk" },
+    { area: "Wadebridge", closestTeam: "Wadebridge Town Fc", highestDeprivation: "15.3%", distance: "20 minute walk" },
+    { area: "Saltash", closestTeam: "Saltash United Fc", highestDeprivation: "28.4%", distance: "10 minute walk" },
+    { area: "Torpoint", closestTeam: "Torpoint Afc", highestDeprivation: "30.4%", distance: "15 minute walk" },
+
+    
+
+
+
+    
+    ];
+
+    
+
+    // Reference to the container
+    const tableContainer = document.getElementById('pathway-table-container');
+    const tableContainer1 = document.getElementById('poverty-table-container');
+
+    // Create table element
+    const table = document.createElement('table');
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '80%';
+    table.style.margin = '20px auto';
+    table.style.textAlign = 'left';
+
+    const table1 = document.createElement('table1');
+    table1.style.borderCollapse = 'collapse';
+    table1.style.width = '80%';
+    table1.style.margin = '20px auto';
+    table1.style.textAlign = 'left';
+
+    // Create table header
+    const headerRow = document.createElement('tr');
+    const headers = ["Program", "Target Group", "Catchment Area"];
+    const headerRow1 = document.createElement('tr');
+    const headers1 = ["Area", "Closest Team", "Highest Deprivation area as %","Distance"];
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.innerText = headerText;
+        header.style.border = '1px solid #ccc';
+        header.style.padding = '8px';
+        header.style.backgroundColor = '#f4f4f4';
+        header.style.fontWeight = 'bold';
+        table.appendChild(headerRow);
+        headerRow.appendChild(header);
+    });
+    headers1.forEach(headerText => {
+        const header1 = document.createElement('th');
+        header1.innerText = headerText;
+        header1.style.border = '1px solid #ccc';
+        header1.style.padding = '8px';
+        header1.style.backgroundColor = '#f4f4f4';
+        header1.style.fontWeight = 'bold';
+        table1.appendChild(headerRow1);
+        headerRow1.appendChild(header1);
+    });
+
+    // Add rows for each program
+    tableData.forEach(rowData => {
+        const row = document.createElement('tr');
+        Object.values(rowData).forEach(cellData => {
+            const cell = document.createElement('td');
+            cell.innerText = cellData;
+            cell.style.border = '1px solid #ccc';
+            cell.style.padding = '8px';
+            row.appendChild(cell);
+        });
+        table.appendChild(row);
+    });
+    povertyData.forEach(rowData => {
+        const row1 = document.createElement('tr');
+        Object.values(rowData).forEach(cellData => {
+            const cell = document.createElement('td');
+            cell.innerText = cellData;
+            cell.style.border = '1px solid #ccc';
+            cell.style.padding = '8px';
+            row1.appendChild(cell);
+        });
+        table1.appendChild(row1);
+    });
+
+    // Append the table to the container
+    tableContainer.appendChild(table);
+    tableContainer1.appendChild(table1);
+    </script>
+
+</body>
+
+</html>

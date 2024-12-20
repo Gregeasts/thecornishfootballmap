@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cornwall Football Development Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #map { width: 100%; height: 100%; }
+        #filters {
+            position: absolute; top: 60px; left: 20px; background: white; padding: 15px;
+            border: 1px solid lightgray; z-index: 9999; border-radius: 5px;
+        }
+        label { display: block; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <!-- Filter Controls -->
+    <div id="filters">
+        <label>Income deprivation % (Minimum): <span id="lowIncomeVal">100</span></label>
+        <input type="range" id="lowIncome" min="0" max="100" value="0" step="1">
+        <label>Teams per 50 (Maximum): <span id="teamsVal">5</span></label>
+        <input type="range" id="teams" min="0" max="3" value="3" step="0.1">
+        <label>Distance from club (Minimum): <span id="distanceVal">0</span></label>
+        <input type="range" id="dist" min="0" max="90" value="0" step="1">
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet.js and JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Map Initialization
+        const map = L.map('map').setView([50.26, -5.05], 9);
+
+        // Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Sample Data with Postcodes
+        const data = [
+            { area: "Pengegon", team: "Troon Afc", areaPostcode: "TR14 7UR", teamPostcode: "TR14 9HT", lowIncome: 51.6, distance: 35, teamsPer50: 0.517, notes: "" },
+            { area: "Budehaven", team: "Bude Town Fc", areaPostcode: "EX23 8DQ", teamPostcode: "EX23 8DR", lowIncome: 26.5, distance: 16, teamsPer50: 0.566, notes: "" },
+            { area: "Upton (Bude)", team: "Bude Town Fc", areaPostcode: "EX23 0RB", teamPostcode: "EX23 8DR", lowIncome: 20.7, distance: 30, teamsPer50: 0.566, notes: "" },
+            { area: "Camelford (Highfield Road)", team: "Camelford Town Fc", areaPostcode: "PL32 9RA", teamPostcode: "PL32 9TS", lowIncome: 30.6, distance: 25, teamsPer50: 0.995, notes: "" },
+            { area: "Lanstephen (Launceston)", team: "Southgate Colts", areaPostcode: "PL15 8JN", teamPostcode: "PL15 9HH", lowIncome: 31.3, distance: 40, teamsPer50: 0.301, notes: "" },
+            { area: "Calstock", team: "Callington Town Fc", areaPostcode: "PL18", teamPostcode: "PL17 7DR", lowIncome: 20.1, distance: 120, teamsPer50: 0, notes: "None in local region, closest region with a team is Callington" },
+            { area: "Fenton Pitts (Lanhydrock)", team: "Lanivet Youth Fc", areaPostcode: "PL30 5HT", teamPostcode: "PL30 5HG", lowIncome: 22.9, distance: 45, teamsPer50: 1.379, notes: "" },
+            { area: "Callington (Outside)", team: "Callington Colts", areaPostcode: "PL17 7ER", teamPostcode: "PL17 8PH", lowIncome: 30.7, distance: 65, teamsPer50: 2.7, notes: "" },
+            { area: "Callywith (Bodmin)", team: "Bodmin Town", areaPostcode: "PL31 2GT", teamPostcode: "PL31 2AE", lowIncome: 25.6, distance: 20, teamsPer50: 0.681, notes: "" },
+            { area: "Bodmin (Center)", team: "Bodmin Town", areaPostcode: "PL31 2HT", teamPostcode: "PL31 2AE", lowIncome: 41.2, distance: 10, teamsPer50: 0.681, notes: "" },
+            { area: "Bodmin (North West)", team: "Bodmin Town", areaPostcode: "PL31 2SS", teamPostcode: "PL31 2AE", lowIncome: 27.8, distance: 20, teamsPer50: 0.681, notes: "" },
+            { area: "Bodmin (West)", team: "Bodmin Town", areaPostcode: "PL31 1HY", teamPostcode: "PL31 2AE", lowIncome: 27.6, distance: 15, teamsPer50: 0.681, notes: "" },
+            { area: "Bodmin (South)", team: "Bodmin Town", areaPostcode: "PL31 1NR", teamPostcode: "PL31 2AE", lowIncome: 38.1, distance: 25, teamsPer50: 0.681, notes: "" },
+            { area: "Liskeard (Central)", team: "St Cleer and Liskeard Fc", areaPostcode: "PL14 3EA", teamPostcode: "PL14 6EE", lowIncome: 41.6, distance: 60, teamsPer50: 0.582, notes: "While Liskeard has an adults team, it does not have a youth setup in Liskeard" },
+            { area: "Liskeard (South West)", team: "St Cleer and Liskeard Fc", areaPostcode: "PL14 4HU", teamPostcode: "PL14 6EE", lowIncome: 37.7, distance: 65, teamsPer50: 0.582, notes: "" },
+            { area: "Liskeard (South)", team: "St Cleer and Liskeard Fc", areaPostcode: "PL14 3BD", teamPostcode: "PL14 6EE", lowIncome: 25.4, distance: 65, teamsPer50: 0.582, notes: "" },
+            { area: "Treviglas (Newquay)", team: "Newquay Youth Fc", areaPostcode: "TR7 3JA", teamPostcode: "TR7 3BH", lowIncome: 20.9, distance: 12, teamsPer50: 0.432, notes: "" },
+            { area: "St Columb Major", team: "St Columb Major Fc", areaPostcode: "TR9 6BU", teamPostcode: "TR9 6RX", lowIncome: 20.4, distance: 10, teamsPer50: 0.259, notes: "" },
+            { area: "Newquay (Edgcumbe)", team: "Newquay Youth Fc", areaPostcode: "TR7 2NL", teamPostcode: "TR7 3BH", lowIncome: 28.0, distance: 22, teamsPer50: 0.432, notes: "" },
+            { area: "Newquay (South West)", team: "Newquay Youth Fc", areaPostcode: "TR7 2AA", teamPostcode: "TR7 3BH", lowIncome: 22.6, distance: 35, teamsPer50: 0.432, notes: "" },
+            { area: "Roche (Carbis Moor)", team: "St Stephen Youth", areaPostcode: "PL26 8YJ", teamPostcode: "PL26 7RN", lowIncome: 27.6, distance: 80, teamsPer50: 0, notes: "None in local region closest is St Stephen" },
+            { area: "St Dennis", team: "St Dennis Fc", areaPostcode: "PL26 8BN", teamPostcode: "PL26 8DT", lowIncome: 26.5, distance: 10, teamsPer50: 0.22, notes: "Only an U12 age group, else 60+ minute journey" },
+            { area: "Saltash (North West)", team: "Saltash United", areaPostcode: "PL12 4JE", teamPostcode: "PL12 6DX", lowIncome: 26.8, distance: 20, teamsPer50: 0.8, notes: "" },
+            { area: "Saltash (Central)", team: "Saltash United", areaPostcode: "PL12 4AQ", teamPostcode: "PL12 6DX", lowIncome: 28.4, distance: 12, teamsPer50: 0.8, notes: "" },
+            { area: "Saltash (South)", team: "Saltash United", areaPostcode: "PL12 4DJ", teamPostcode: "PL12 6DX", lowIncome: 20.1, distance: 20, teamsPer50: 0.8, notes: "" },
+            { area: "Saltash (Wearde)", team: "Saltash United", areaPostcode: "PL12 4AY", teamPostcode: "PL12 6DX", lowIncome: 20.1, distance: 20, teamsPer50: 0.8, notes: "" },
+            { area: "Lostwithiel (North)", team: "Bodmin Town", areaPostcode: "PL30 5AW", teamPostcode: "PL31 2AE", lowIncome: 20.8, distance: 60, teamsPer50: 0.224, notes: "Only an U14 team who do not have a location in Lostwithiel, next nearest team 80 minutes away (Bodmin)" },
+            { area: "Rescorla", team: "St Stephen Youth", areaPostcode: "PL26 8YT", teamPostcode: "PL26 7RN", lowIncome: 28.9, distance: 80, teamsPer50: 0, notes: "None in local region closest is St Stephen" },
+            { area: "Roche South", team: "St Stephen Youth", areaPostcode: "PL26 8RA", teamPostcode: "PL26 7RN", lowIncome: 27.7, distance: 80, teamsPer50: 0, notes: "None in local region closest is St Stephen" },
+            { area: "Torpoint (South East)", team: "Torpoint AFC", areaPostcode: "PL11 2EH", teamPostcode: "PL11 2RE", lowIncome: 30.4, distance: 15, teamsPer50: 0.887, notes: "" },
+            { area: "Torpoint (North East)", team: "Torpoint AFC", areaPostcode: "PL11 2LY", teamPostcode: "PL11 2RE", lowIncome: 22.1, distance: 15, teamsPer50: 0.887, notes: "" },
+            { area: "Foxhole", team: "St Stephen Youth", areaPostcode: "PL26 7TX", teamPostcode: "PL26 7RN", lowIncome: 25.4, distance: 40, teamsPer50: 0.688, notes: "" },
+            { area: "St Stephen", team: "St Stephen Youth", areaPostcode: "PL26 7PF", teamPostcode: "PL26 7RN", lowIncome: 25.1, distance: 10, teamsPer50: 0.688, notes: "" },
+            { area: "St Blazey (Rose Hill)", team: "St Blazey", areaPostcode: "PL24 2LG", teamPostcode: "PL24 2ND", lowIncome: 30.1, distance: 20, teamsPer50: 2.4, notes: "" },
+            { area: "St Austell (Sandy Bottom)", team: "Treggorick Youth FC", areaPostcode: "PL25 3GE", teamPostcode: "PL26 7FH", lowIncome: 21.8, distance: 45, teamsPer50: 0.031, notes: "Note: No teams in St Austell beside U18" },
+            { area: "Trethowel (St Austell)", team: "Charlestown Youth FC", areaPostcode: "PL25 5RR", teamPostcode: "PL26 7DT", lowIncome: 25.6, distance: 60, teamsPer50: 0.031, notes: "Note: No teams in St Austell beside U18" },
+            { area: "St Austell (Pondhu)", team: "Charlestown Youth FC", areaPostcode: "PL25 5DS", teamPostcode: "PL26 7DT", lowIncome: 39.4, distance: 45, teamsPer50: 0.031, notes: "" },
+            { area: "St Austell (Central)", team: "Charlestown Youth FC", areaPostcode: "PL25 4QW", teamPostcode: "PL26 7DT", lowIncome: 35.5, distance: 30, teamsPer50: 0.031, notes: "" },
+            { area: "St Austell (Penrice)", team: "Treggorick Youth FC", areaPostcode: "PL25 3NR", teamPostcode: "PL26 7FH", lowIncome: 20.2, distance: 26, teamsPer50: 0.031, notes: "" },
+            { area: "St Austell (North East)", team: "Treggorick Youth FC", areaPostcode: "PL25 4DP", teamPostcode: "PL26 7FH", lowIncome: 27.8, distance: 33, teamsPer50: 0.031, notes: "" },
+            { area: "Truro (Truro School)", team: "Truro City", areaPostcode: "TR1 3QN", teamPostcode: "TR1 3FB", lowIncome: 38.2, distance: 35, teamsPer50: 0.838, notes: "" },
+            { area: "Truro (Treliske)", team: "Truro City", areaPostcode: "TR1 3LJ", teamPostcode: "TR1 3FB", lowIncome: 25.9, distance: 40, teamsPer50: 0.838, notes: "" },
+            { area: "Truro (Newmill)", team: "Truro City", areaPostcode: "TR4 9EU", teamPostcode: "TR1 3FB", lowIncome: 27.0, distance: 15, teamsPer50: 0.838, notes: "" },
+            { area: "Illogan", team: "Illogan FC", areaPostcode: "TR16 4SR", teamPostcode: "TR16 4DQ", lowIncome: 27.4, distance: 25, teamsPer50: 1.667, notes: "" },
+            { area: "Treleigh (Redruth)", team: "Illogan FC", areaPostcode: "TR16 4AX", teamPostcode: "TR16 4DQ", lowIncome: 44.7, distance: 48, teamsPer50: 1.667, notes: "Note: also roughly the same distance to Redruth United FC" },
+            { area: "Lanner", team: "Redruth United FC", areaPostcode: "TR16 6HJ", teamPostcode: "TR15 2NQ", lowIncome: 20.6, distance: 21, teamsPer50: 0, notes: "(No teams in Lanner but Lanner near Redruth)" },
+            { area: "Barncoose (Pool)", team: "Illogan FC", areaPostcode: "TR15 3EZ", teamPostcode: "TR16 4DQ", lowIncome: 27.4, distance: 25, teamsPer50: 0.513, notes: "" },
+            { area: "Higher Brea", team: "Illogan FC", areaPostcode: "TR15 3YJ", teamPostcode: "TR16 4DQ", lowIncome: 24.9, distance: 40, teamsPer50: 0.365, notes: "Note: All of Troon, Redruth, and Illogan are within an hour of Brea" },
+            { area: "Illogan (Treloweth)", team: "Illogan FC", areaPostcode: "TR15 3JL", teamPostcode: "TR16 4DQ", lowIncome: 32.5, distance: 18, teamsPer50: 0.513, notes: "" },
+            { area: "Roskear (Pool)", team: "Dropship FC", areaPostcode: "TR14 0AP", teamPostcode: "TR14 7QG", lowIncome: 21.8, distance: 33, teamsPer50: 0.517, notes: "Note: Both Troon and Illogan similar distance of 1 hour" },
+            { area: "Roseland (Pool)", team: "Dropship FC", areaPostcode: "TR14 7HU", teamPostcode: "TR14 7QG", lowIncome: 22.5, distance: 25, teamsPer50: 0.517, notes: "" },
+            { area: "Tuckingmill", team: "Illogan FC", areaPostcode: "TR14 8QS", teamPostcode: "TR16 4DQ", lowIncome: 35.5, distance: 45, teamsPer50: 0.513, notes: "Note: Illogan and Dropship similar distance" },
+            { area: "Camborne (East)", team: "Dropship FC", areaPostcode: "TR14 8DR", teamPostcode: "TR14 7QG", lowIncome: 25, distance: 25, teamsPer50: 0.517, notes: "" },
+            { area: "Camborne (West)", team: "Dropship FC", areaPostcode: "TR14 7LB", teamPostcode: "TR14 7QG", lowIncome: 37, distance: 20, teamsPer50: 0.517, notes: "" },
+            { area: "Camborne (Central)", team: "Dropship FC", areaPostcode: "TR14 8ES", teamPostcode: "TR14 7QG", lowIncome: 32.2, distance: 15, teamsPer50: 0.517, notes: "" },
+            { area: "St Ives", team: "St Ives Youth", areaPostcode: "TR26 1AS", teamPostcode: "TR26 3DL", lowIncome: 31.3, distance: 60, teamsPer50: 0.183, notes: "" },
+            { area: "St Ives (West)", team: "St Ives Youth", areaPostcode: "TR26 3AL", teamPostcode: "TR26 3DL", lowIncome: 25.3, distance: 70, teamsPer50: 0.183, notes: "" },
+            { area: "Beacon (Camborne)", team: "Troon AFC", areaPostcode: "TR14 7ST", teamPostcode: "TR14 9HT", lowIncome: 23.4, distance: 30, teamsPer50: 0.517, notes: "" },
+            { area: "Pengegon", team: "Troon AFC", areaPostcode: "TR14 7UR", teamPostcode: "TR14 9HT", lowIncome: 51.6, distance: 45, teamsPer50: 0.517, notes: "" },
+            { area: "Beacon (South)", team: "Troon AFC", areaPostcode: "TR14 9AB", teamPostcode: "TR14 9HT", lowIncome: 25, distance: 30, teamsPer50: 0.517, notes: "" },
+            { area: "Carharrack (East)", team: "St Day AFC", areaPostcode: "TR16 5RR", teamPostcode: "TR16 5NQ", lowIncome: 23.2, distance: 25, teamsPer50: 0, notes: "St Day nearby with 3.15 teams per 50" },
+            { area: "Hayle", team: "Hayle AFC", areaPostcode: "TR27 5PN", teamPostcode: "TR27 5HT", lowIncome: 27.1, distance: 25, teamsPer50: 0.754, notes: "" },
+            { area: "Hayle (Central)", team: "Hayle AFC", areaPostcode: "TR27 4DN", teamPostcode: "TR27 5HT", lowIncome: 30.5, distance: 15, teamsPer50: 0.754, notes: "" },
+            { area: "Penryn", team: "Falmouth Community", areaPostcode: "TR10 8PW", teamPostcode: "TR11 4LH", lowIncome: 29.9, distance: 30, teamsPer50: 0.079, notes: "U18 team in Penryn, no younger ages" },
+            { area: "Marazion", team: "Ludgvan Town", areaPostcode: "TR17 0HQ", teamPostcode: "TR20 8ES", lowIncome: 23.9, distance: 45, teamsPer50: 0, notes: "" },
+            { area: "Falmouth (Falmouth Primary)", team: "Falmouth Community", areaPostcode: "TR11 2BB", teamPostcode: "TR11 4LH", lowIncome: 27.4, distance: 25, teamsPer50: 1.04, notes: "" },
+            { area: "Falmouth (Old Hill)", team: "Falmouth Community", areaPostcode: "TR11 2TD", teamPostcode: "TR11 4LH", lowIncome: 37.4, distance: 30, teamsPer50: 1.04, notes: "" },
+            { area: "Falmouth (Trecobeas)", team: "Falmouth Community", areaPostcode: "TR11 2HQ", teamPostcode: "TR11 4LH", lowIncome: 26.1, distance: 15, teamsPer50: 1.04, notes: "" },
+            { area: "Pendeen", team: "St Just FC", areaPostcode: "TR19 7EH", teamPostcode: "TR19 7LE", lowIncome: 22.8, distance: 50, teamsPer50: 0.267, notes: "" },
+            { area: "Mounts Bay (Penzance)", team: "Penzance Youth", areaPostcode: "TR18 3FD", teamPostcode: "TR18 5HS", lowIncome: 28.1, distance: 45, teamsPer50: 0.513, notes: "" },
+            { area: "Penzance (Humphry Davy)", team: "Penzance Youth", areaPostcode: "TR18 3PN", teamPostcode: "TR18 5HS", lowIncome: 52.5, distance: 50, teamsPer50: 0.513, notes: "" },
+            { area: "Penzance (Central)", team: "Penzance Youth", areaPostcode: "TR18 2PF", teamPostcode: "TR18 5HS", lowIncome: 37.3, distance: 40, teamsPer50: 0.513, notes: "" },
+            { area: "Penzance (North East)", team: "Penzance Youth", areaPostcode: "TR18 2NG", teamPostcode: "TR18 5HS", lowIncome: 26.5, distance: 40, teamsPer50: 0.513, notes: "" },
+            { area: "Penzance (South West)", team: "Penzance Youth", areaPostcode: "TR18 4PF", teamPostcode: "TR18 5HS", lowIncome: 29.9, distance: 20, teamsPer50: 0.513, notes: "" },
+            { area: "Newlyn", team: "Mousehole AFC", areaPostcode: "TR18 5NZ", teamPostcode: "TR19 6AZ", lowIncome: 41.4, distance: 25, teamsPer50: 0.513, notes: "Same distance to Penzance Youth" }
+        ];
+
+        // Initialize Marker and Polyline Layers
+        let markerGroup = L.layerGroup().addTo(map);
+
+        // Function to Set Dot Color Based on Gradient
+        function getDotColor(value, max, colorStart, colorEnd) {
+            const ratio = value / max;
+            const r = Math.round(colorStart[0] + ratio * (colorEnd[0] - colorStart[0]));
+            const g = Math.round(colorStart[1] + ratio * (colorEnd[1] - colorStart[1]));
+            const b = Math.round(colorStart[2] + ratio * (colorEnd[2] - colorStart[2]));
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+        function getDotColor1(value, max, colorStart, colorEnd) {
+            const ratio = 1 - (value / max); // Invert the ratio calculation
+            const r = Math.round(colorStart[0] + ratio * (colorEnd[0] - colorStart[0]));
+            const g = Math.round(colorStart[1] + ratio * (colorEnd[1] - colorStart[1]));
+            const b = Math.round(colorStart[2] + ratio * (colorEnd[2] - colorStart[2]));
+            return `rgb(${r}, ${g}, ${b})`;
+}
+
+        // Function to get coordinates from postcode using Postcodes.io API
+        async function getCoordinates(postcode) {
+            try {
+                const response = await fetch(`https://api.postcodes.io/postcodes/${postcode}`);
+                const data = await response.json();
+                if (data.result) {
+                    return [data.result.latitude, data.result.longitude];
+                }
+            } catch (error) {
+                console.error("Error fetching postcode coordinates:", error);
+                return null;
+            }
+        }
+
+        // Function to Update Map Based on Filters
+        async function updateMap() {
+            const lowIncomeMax = parseFloat(document.getElementById("lowIncome").value);
+            const teamsMax = parseFloat(document.getElementById("teams").value);
+            const distMax = parseFloat(document.getElementById("dist").value);
+            document.getElementById("lowIncomeVal").innerText = lowIncomeMax;
+            document.getElementById("teamsVal").innerText = teamsMax;
+            document.getElementById("distanceVal").innerText = distMax;
+
+            markerGroup.clearLayers();
+
+            for (let item of data) {
+                if (item.lowIncome < lowIncomeMax || item.teamsPer50 > teamsMax || item.distance <distMax) continue;
+
+                const areaCoords = await getCoordinates(item.areaPostcode);
+                const teamCoords = await getCoordinates(item.teamPostcode);
+                
+                if (!areaCoords || !teamCoords) continue; // Skip this item if coordinates couldn't be fetched
+
+                const areaColor = getDotColor(item.lowIncome, 100, [255, 0, 0], [0, 255, 0]);
+                const teamColor = getDotColor(item.teamsPer50, 5, [255, 255, 0], [0, 0, 255]);
+
+                // Create markers
+                const areaMarker = L.marker(areaCoords, { icon: L.divIcon({
+                    className: 'area-marker',
+                    html: '<div style="background-color:' + areaColor + '; width: 12px; height: 12px; border-radius: 50%;"></div>',
+                    iconSize: [12, 12]
+                }) })
+                .bindPopup(`<b>${item.area}</b><br>Low Income: ${item.lowIncome}%`)
+                .on('click', function (e) {
+                    zoomToLocation(areaCoords, teamCoords);
+                })
+                .addTo(markerGroup);
+
+                const teamMarker = L.marker(teamCoords, { 
+                    icon: L.divIcon({
+                        className: 'team-marker',
+                        html: '<div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 12px solid ' + teamColor + ';"></div>',
+                        iconSize: [12, 12]
+                    }) 
+                })
+                .bindPopup(`<b>${item.team}</b><br>Teams per 50: ${item.teamsPer50}`)
+                .on('click', function (e) {
+                    zoomToLocation(areaCoords, teamCoords);
+                })
+                .addTo(markerGroup);
+
+                // Line
+                const lineColor = getDotColor1(item.distance, 40, [255, 0, 0], [0, 255, 0]);
+                L.polyline([areaCoords, teamCoords], { color: lineColor }).addTo(markerGroup);
+            }
+        }
+
+        // Function to Zoom to Location
+        function zoomToLocation(areaCoords, teamCoords) {
+            const latLngs = [areaCoords, teamCoords];
+            const bounds = L.latLngBounds(latLngs);
+            map.fitBounds(bounds);
+        }
+
+        // Function to Create Larger Blob
+        function createLargerBlob(coords) {
+            const bounds = L.latLngBounds(coords);
+            const marker = L.circle(bounds.getCenter(), {
+                radius: map.getBoundsZoom(bounds) * 500,
+                color: 'blue',
+                opacity: 0.5,
+                fillOpacity: 0.3
+            }).addTo(markerGroup);
+            marker.on('click', function() {
+                zoomToLocation(...coords);
+            });
+        }
+
+        // Event Listeners for Filters
+        document.getElementById("lowIncome").addEventListener("input", updateMap);
+        document.getElementById("teams").addEventListener("input", updateMap);
+        document.getElementById("dist").addEventListener("input", updateMap);
+
+        // Initialize Map
+        updateMap();
+
+        // Watch for zoom level changes to adjust larger blob
+        map.on('zoomend', function() {
+            const zoom = map.getZoom();
+            if (zoom > 10) {
+                // Show detailed markers
+                markerGroup.clearLayers();
+                updateMap();
+            } else {
+                // Show larger blob
+                markerGroup.clearLayers();
+                const coords = data.map(item => getCoordinates(item.areaPostcode));
+                createLargerBlob(coords);
+            }
+        });
+    </script>
+</body>
+</html>
